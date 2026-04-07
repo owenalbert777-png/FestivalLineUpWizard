@@ -220,7 +220,7 @@ html,body{background:var(--night);min-height:100%;overflow-x:hidden}
 
 /* ── SCHEDULE ── */
 /* ── SCHEDULE TIMELINE ── */
-.sch-outer{padding:0;border-radius:10px;overflow:hidden}
+.sch-outer{padding:0;border-radius:10px;overflow:visible}
 .sch-day-wrap{margin-bottom:28px}
 .sch-day-header{
   font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;
@@ -966,6 +966,7 @@ const RAW=[
 {n:"Nimino (DJ Set)",g:"DJ Set",day:"Sun",stage:"Heineken House",wk:0},
 ];
 
+{n:"Max Dean x Luke Dean",g:"Electronic",day:"Fri",stage:"Yuma",wk:0},
 function dedup(a){const s=new Set();return a.filter(x=>{if(s.has(x.n))return false;s.add(x.n);return true;});}
 const ARTISTS=dedup(RAW);
 function artImg(n){return IMGS[n]||null;}
