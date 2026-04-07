@@ -210,38 +210,79 @@ html,body{background:var(--night);min-height:100%;overflow-x:hidden}
 .calib-text{font-size:12px;color:var(--muted);margin-bottom:11px}
 
 /* ── SCHEDULE ── */
-/* ── SCHEDULE GRID ── */
-.sch-outer{padding:0 2px}
+/* ── SCHEDULE TIMELINE ── */
+.sch-outer{padding:0}
+.sch-day-wrap{margin-bottom:32px}
 .sch-day-header{
   font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;
   text-align:center;padding:14px 0 10px;
   color:var(--gold-l);text-shadow:0 0 20px rgba(212,168,67,.4);
-  border-bottom:1px solid rgba(212,168,67,.2);margin-bottom:14px;
+  border-bottom:1px solid rgba(212,168,67,.2);margin-bottom:0;
 }
 .sch-day-sub{font-size:11px;color:var(--muted);letter-spacing:2px;display:block;margin-top:2px;font-family:'DM Sans',sans-serif;font-weight:500}
-.sch-grid{
-  display:grid;gap:8px;
-  overflow-x:auto;padding-bottom:6px;
+/* Scrollable container for the full grid */
+.sch-scroll{overflow-x:auto;overflow-y:visible;padding-bottom:8px}
+/* The actual grid: time axis column + one column per stage */
+.sch-timeline{
+  display:flex;flex-direction:row;
+  min-width:max-content;
+  position:relative;
 }
-.sch-col{min-width:105px}
+/* Time axis */
+.sch-yaxis{
+  width:44px;flex-shrink:0;position:sticky;left:0;z-index:10;
+  background:linear-gradient(180deg,var(--night) 0%,rgba(14,10,8,.95) 100%);
+  border-right:1px solid rgba(74,58,38,.3);
+}
+.sch-yaxis-inner{position:relative;}
+.sch-tick-label{
+  position:absolute;right:6px;
+  font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.3px;
+  transform:translateY(-50%);white-space:nowrap;line-height:1;
+}
+/* Horizontal grid lines drawn inside the stage area */
+.sch-gridlines{
+  position:absolute;inset:0;pointer-events:none;z-index:1;
+}
+.sch-hline{
+  position:absolute;left:0;right:0;height:1px;
+  background:rgba(74,58,38,.18);
+}
+.sch-hline-hour{
+  background:rgba(74,58,38,.35);
+}
+/* Stage column wrapper */
+.sch-stage-col{
+  flex:1;min-width:100px;max-width:140px;
+  display:flex;flex-direction:column;border-left:1px solid rgba(74,58,38,.2);
+}
 .sch-stage-hdr{
-  font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:2px;
-  text-align:center;padding:6px 4px 5px;border-radius:5px 5px 0 0;
-  margin-bottom:4px;border-bottom:2px solid;
+  font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:1.5px;
+  text-align:center;padding:5px 3px 4px;
+  border-bottom:2px solid;position:sticky;top:0;z-index:5;
+  backdrop-filter:blur(8px);
 }
-.sch-slot{
-  border-radius:4px;padding:5px 7px;margin-bottom:3px;cursor:default;
-  border-left:2px solid transparent;transition:transform .15s;
-  backdrop-filter:blur(3px);
+/* The timeline body — position:relative so slots can be absolutely placed */
+.sch-col-body{
+  position:relative;flex:1;
 }
-.sch-slot:hover{transform:translateX(2px)}
-.sch-time{font-size:8px;color:rgba(255,255,255,.5);letter-spacing:.5px;margin-bottom:1px;font-weight:600}
-.sch-name{font-size:10px;font-weight:600;line-height:1.25;letter-spacing:.2px}
-.sch-legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:16px}
+/* Individual set block */
+.sch-block{
+  position:absolute;left:2px;right:2px;
+  border-radius:4px;border-left:2px solid transparent;
+  padding:3px 5px;overflow:hidden;cursor:default;
+  transition:transform .15s, box-shadow .15s;
+  z-index:2;box-sizing:border-box;
+  backdrop-filter:blur(2px);
+}
+.sch-block:hover{transform:scaleX(1.03) translateX(1px);z-index:10;box-shadow:0 4px 14px rgba(0,0,0,.6)!important}
+.sch-block-time{font-size:7.5px;color:rgba(255,255,255,.45);letter-spacing:.3px;font-weight:600;white-space:nowrap;overflow:hidden}
+.sch-block-name{font-size:9.5px;font-weight:700;line-height:1.2;letter-spacing:.15px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+/* Legend */
+.sch-legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:14px 0 12px}
 .sch-leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
 .sch-leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
-.sch-day-wrap{margin-bottom:28px}
-.sch-note{font-size:10px;color:var(--muted);text-align:center;margin-top:8px;font-style:italic}
+.sch-note{font-size:10px;color:var(--muted);text-align:center;margin-top:8px;font-style:italic;padding-bottom:16px}
 
 /* ── MODAL ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(6px)}
@@ -1536,61 +1577,137 @@ function buildScheduleGrid(sorted,sc){
   const root=document.getElementById('sch-root');
   if(!root)return;
 
-  // Tier color lookup — uses live rankings if available
+  // ── Time helpers ──────────────────────────────────────────
+  // Parse "H:MM" (12-hour, treats <6am as next-day)
+  function parseTime(str){
+    const[h,m]=str.trim().split(':').map(Number);
+    // After-midnight sets (1am, 12am) should appear at top (late in the day)
+    // We use 24h where 13=1pm, 24=12am(midnight), 25=1am
+    let h24=h;
+    if(h<=6) h24=h+24; // 1am → 25, 2am → 26
+    else if(h<13) h24=h; // 9am → 9 (unused but safe)
+    return h24*60+m;
+  }
+  function parsePair(t){
+    // t like "4:10–4:55" or "11:50–1:00"
+    const parts=t.split('–');
+    return{start:parseTime(parts[0]),end:parseTime(parts[1])};
+  }
+  function fmtHour(mins){
+    const h=Math.floor(mins/60)%24;
+    const m=mins%60;
+    const ampm=h>=12?'am':'pm'; // actually we display 12h
+    const h12=h===0?12:h>12?h-12:h;
+    return m===0?`${h12}${ampm}`:`${h12}:${m<10?'0'+m:m}${ampm}`;
+  }
+
+  // ── Layout constants ──────────────────────────────────────
+  const PX_PER_MIN=2.4;   // pixels per minute
+  const DAY_START=parseTime('12:30'); // 12:30pm — grid top (visually flipped: top=late)
+  const DAY_END  =parseTime('1:30');  // 1:30am  — grid bottom (earliest on screen)
+  // NOTE: We draw time bottom-up (1:30am at bottom of screen = top of data)
+  // So: top of visual = DAY_END, bottom of visual = DAY_START
+  const TOTAL_MINS=DAY_END-DAY_START; // total mins shown
+  const GRID_HEIGHT=TOTAL_MINS*PX_PER_MIN;
+
+  function minToY(mins){
+    // Convert absolute minutes to Y pixel from TOP of grid
+    // DAY_END (late) → top (y=0), DAY_START (early) → bottom (y=GRID_HEIGHT)
+    // Wait — poster style: 1pm at BOTTOM, 1am at TOP
+    // So early = large y (bottom), late = small y (top)
+    return (DAY_END-mins)*PX_PER_MIN;
+  }
+
+  // ── Tier color helper ─────────────────────────────────────
   function slotTier(name){
     if(sc&&sc[name]!==undefined){
       const s=sc[name];
-      if(s>=7.5)return{bg:"rgba(74,140,88,.22)",border:"#4A8C5C",text:"#6AB87A",glow:"rgba(74,140,88,.35)"};
-      if(s>=5.0)return{bg:"rgba(212,168,67,.2)",border:"#D4A843",text:"#F0C865",glow:"rgba(212,168,67,.35)"};
-      if(s>=3.0)return{bg:"rgba(196,86,26,.18)",border:"#C4561A",text:"#E8733A",glow:"rgba(196,86,26,.3)"};
-      return{bg:"rgba(60,45,30,.4)",border:"#504030",text:"#A89068",glow:"none"};
+      if(s>=7.5)return{bg:"rgba(74,140,88,.28)",border:"#4A8C5C",text:"#6AB87A",glow:"0 0 8px rgba(74,140,88,.45)"};
+      if(s>=5.0)return{bg:"rgba(212,168,67,.25)",border:"#D4A843",text:"#F0C865",glow:"0 0 8px rgba(212,168,67,.4)"};
+      if(s>=3.0)return{bg:"rgba(196,86,26,.22)",border:"#C4561A",text:"#E8733A",glow:"0 0 6px rgba(196,86,26,.35)"};
+      return{bg:"rgba(60,45,30,.45)",border:"#504030",text:"#A89068",glow:"none"};
     }
-    // Not in ranked pool — neutral dark
-    return{bg:"rgba(30,22,14,.65)",border:"rgba(74,58,38,.4)",text:"var(--text)",glow:"none"};
+    return{bg:"rgba(28,20,12,.75)",border:"rgba(74,58,38,.5)",text:"rgba(245,234,204,.7)",glow:"none"};
   }
 
   const stages=WK1_SCHEDULE.stages;
-  const numStages=stages.length;
 
+  // ── Legend ────────────────────────────────────────────────
   let html=`<div class="sch-legend">
-    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:#4A8C5C;box-shadow:0 0 6px rgba(74,140,88,.6)"></div>Tier 1 (7.5+)</div>
-    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:#D4A843;box-shadow:0 0 6px rgba(212,168,67,.6)"></div>Tier 2 (5.0–7.4)</div>
-    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:#C4561A;box-shadow:0 0 6px rgba(196,86,26,.5)"></div>Tier 3 (3.0–4.9)</div>
+    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:#4A8C5C;box-shadow:0 0 6px rgba(74,140,88,.7)"></div>Tier 1 (7.5+)</div>
+    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:#D4A843;box-shadow:0 0 6px rgba(212,168,67,.7)"></div>Tier 2 (5.0–7.4)</div>
+    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:#C4561A;box-shadow:0 0 6px rgba(196,86,26,.6)"></div>Tier 3 (3.0–4.9)</div>
     <div class="sch-leg-item"><div class="sch-leg-dot" style="background:#504030"></div>Ranked below 3</div>
-    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:rgba(30,22,14,.9);border:1px solid rgba(74,58,38,.5)"></div>Not in your pool</div>
+    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:rgba(28,20,12,.9);border:1px solid rgba(74,58,38,.5)"></div>Not in your pool</div>
   </div>`;
 
+  // ── Per-day grids ─────────────────────────────────────────
   WK1_SCHEDULE.days.forEach(day=>{
     html+=`<div class="sch-day-wrap">
-      <div class="sch-day-header">
-        ${day.label}
-        <span class="sch-day-sub">${day.date} · Weekend 1</span>
-      </div>
-      <div class="sch-grid" style="grid-template-columns:repeat(${numStages},minmax(105px,1fr))">`;
+      <div class="sch-day-header">${day.label}<span class="sch-day-sub">${day.date} · Weekend 1</span></div>
+      <div class="sch-scroll">
+        <div class="sch-timeline" style="height:${GRID_HEIGHT+36}px">`;
 
+    // ── Y-axis (time labels) ──────────────────────────────
+    html+=`<div class="sch-yaxis">
+      <div class="sch-yaxis-inner" style="height:${GRID_HEIGHT}px;margin-top:30px;position:relative">`;
+    // Tick every 30 min
+    for(let m=DAY_START;m<=DAY_END;m+=30){
+      const y=minToY(m);
+      const isHour=m%60===0;
+      html+=`<div class="sch-tick-label" style="top:${y}px;${isHour?'color:var(--text)':'opacity:.55'}">${fmtHour(m)}</div>`;
+    }
+    html+=`</div></div>`; // close yaxis
+
+    // ── Horizontal grid lines (behind all columns) ────────
+    // These go inside each column, not as a separate overlay, so we do them per-col
+
+    // ── Stage columns ─────────────────────────────────────
     stages.forEach(stage=>{
-      const stColor=stage.color;
-      html+=`<div class="sch-col">
-        <div class="sch-stage-hdr" style="color:${stColor};border-bottom-color:${stColor};background:${stColor}18">
-          ${stage.short}
-        </div>`;
+      const color=stage.color;
+      const sets=day.sets[stage.id]||[];
 
-      const sets=(day.sets[stage.id]||[]);
+      html+=`<div class="sch-stage-col">
+        <div class="sch-stage-hdr" style="color:${color};border-bottom-color:${color};background:${color}1A;height:30px;line-height:20px">${stage.short}</div>
+        <div class="sch-col-body" style="height:${GRID_HEIGHT}px">`;
+
+      // Draw horizontal grid lines
+      for(let m=DAY_START;m<=DAY_END;m+=30){
+        const y=minToY(m);
+        const isHour=m%60===0;
+        html+=`<div style="position:absolute;left:0;right:0;top:${y}px;height:1px;background:${isHour?'rgba(74,58,38,.3)':'rgba(74,58,38,.12)'};pointer-events:none;z-index:1"></div>`;
+      }
+
+      // Draw set blocks
       sets.forEach(set=>{
+        const{start,end}=parsePair(set.t);
+        // Clamp to visible range
+        const clampedStart=Math.max(start,DAY_START);
+        const clampedEnd=Math.min(end,DAY_END);
+        if(clampedEnd<=clampedStart)return;
+
+        const top=minToY(clampedEnd);   // end-time → smaller y (higher on screen)
+        const bot=minToY(clampedStart); // start-time → larger y (lower on screen)
+        const height=bot-top;
+        if(height<2)return;
+
         const t=slotTier(set.n);
-        html+=`<div class="sch-slot" style="background:${t.bg};border-left-color:${t.border};box-shadow:${t.glow!=='none'?`0 0 8px ${t.glow}`:'none'}">
-          <div class="sch-time">${set.t}</div>
-          <div class="sch-name" style="color:${t.text}">${set.n}</div>
-        </div>`;
+        const showTime=height>=18;
+        const showName=height>=10;
+
+        html+=`<div class="sch-block" style="top:${top}px;height:${height}px;background:${t.bg};border-left-color:${t.border};box-shadow:${t.glow}" title="${set.n} · ${set.t}">`;
+        if(showTime) html+=`<div class="sch-block-time">${set.t}</div>`;
+        if(showName) html+=`<div class="sch-block-name" style="color:${t.text}">${set.n}</div>`;
+        html+=`</div>`;
       });
 
-      html+=`</div>`;
+      html+=`</div></div>`; // close col-body, stage-col
     });
 
-    html+=`</div></div>`;
+    html+=`</div></div></div>`; // close timeline, scroll, day-wrap
   });
 
-  html+=`<div class="sch-note">Source: Clashfinder rev 231 (Apr 5 2026) · Do LaB times are estimated slot order based on lineup · Wk 2 set times TBA</div>`;
+  html+=`<div class="sch-note">Source: Clashfinder rev 231 (Apr 5 2026) · Do LaB slot times estimated · Wk 2 set times TBA</div>`;
   root.innerHTML=html;
 }
 
