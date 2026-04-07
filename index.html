@@ -211,78 +211,54 @@ html,body{background:var(--night);min-height:100%;overflow-x:hidden}
 
 /* ── SCHEDULE ── */
 /* ── SCHEDULE TIMELINE ── */
-.sch-outer{padding:0}
-.sch-day-wrap{margin-bottom:32px}
+.sch-outer{padding:0;border-radius:10px;overflow:hidden}
+.sch-day-wrap{margin-bottom:28px}
 .sch-day-header{
-  font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;
-  text-align:center;padding:14px 0 10px;
-  color:var(--gold-l);text-shadow:0 0 20px rgba(212,168,67,.4);
-  border-bottom:1px solid rgba(212,168,67,.2);margin-bottom:0;
+  font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;
+  text-align:center;padding:11px 0 8px;
+  color:var(--gold-l);text-shadow:0 0 18px rgba(212,168,67,.4);
+  border-bottom:1px solid rgba(212,168,67,.2);
 }
-.sch-day-sub{font-size:11px;color:var(--muted);letter-spacing:2px;display:block;margin-top:2px;font-family:'DM Sans',sans-serif;font-weight:500}
-/* Scrollable container for the full grid */
-.sch-scroll{overflow-x:auto;overflow-y:visible;padding-bottom:8px}
-/* The actual grid: time axis column + one column per stage */
-.sch-timeline{
-  display:flex;flex-direction:row;
-  min-width:max-content;
-  position:relative;
-}
-/* Time axis */
-.sch-yaxis{
-  width:44px;flex-shrink:0;position:sticky;left:0;z-index:10;
-  background:linear-gradient(180deg,var(--night) 0%,rgba(14,10,8,.95) 100%);
-  border-right:1px solid rgba(74,58,38,.3);
-}
-.sch-yaxis-inner{position:relative;}
-.sch-tick-label{
-  position:absolute;right:6px;
-  font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.3px;
-  transform:translateY(-50%);white-space:nowrap;line-height:1;
-}
-/* Horizontal grid lines drawn inside the stage area */
-.sch-gridlines{
-  position:absolute;inset:0;pointer-events:none;z-index:1;
-}
-.sch-hline{
-  position:absolute;left:0;right:0;height:1px;
-  background:rgba(74,58,38,.18);
-}
-.sch-hline-hour{
-  background:rgba(74,58,38,.35);
-}
-/* Stage column wrapper */
-.sch-stage-col{
-  flex:1;min-width:100px;max-width:140px;
-  display:flex;flex-direction:column;border-left:1px solid rgba(74,58,38,.2);
-}
+.sch-day-sub{font-size:10px;color:var(--muted);letter-spacing:2px;display:block;margin-top:2px;font-family:'DM Sans',sans-serif}
+/* Outer scroll wrapper — only horizontal */
+.sch-scroll{overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+/* Flex row: all stage cols + right y-axis */
+.sch-timeline{display:flex;flex-direction:row;align-items:flex-start;position:relative;min-width:max-content}
+/* Each stage column */
+.sch-stage-col{width:104px;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid rgba(74,58,38,.22)}
 .sch-stage-hdr{
-  font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:1.5px;
-  text-align:center;padding:5px 3px 4px;
-  border-bottom:2px solid;position:sticky;top:0;z-index:5;
-  backdrop-filter:blur(8px);
+  font-family:'Bebas Neue',sans-serif;font-size:9.5px;letter-spacing:1.6px;
+  text-align:center;padding:4px 2px;border-bottom:2px solid;
+  height:26px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;
+  background:rgba(10,7,4,.9);position:sticky;top:0;z-index:5;
 }
-/* The timeline body — position:relative so slots can be absolutely placed */
-.sch-col-body{
-  position:relative;flex:1;
-}
-/* Individual set block */
+/* The positioned area inside each column */
+.sch-col-body{position:relative;flex:1}
+/* Individual set block — top/height set by JS */
 .sch-block{
   position:absolute;left:2px;right:2px;
-  border-radius:4px;border-left:2px solid transparent;
-  padding:3px 5px;overflow:hidden;cursor:default;
-  transition:transform .15s, box-shadow .15s;
-  z-index:2;box-sizing:border-box;
-  backdrop-filter:blur(2px);
+  border-radius:3px;border-left:3px solid;
+  padding:2px 3px 2px 4px;overflow:hidden;
+  box-sizing:border-box;z-index:2;cursor:default;
+  transition:filter .12s;
 }
-.sch-block:hover{transform:scaleX(1.03) translateX(1px);z-index:10;box-shadow:0 4px 14px rgba(0,0,0,.6)!important}
-.sch-block-time{font-size:7.5px;color:rgba(255,255,255,.45);letter-spacing:.3px;font-weight:600;white-space:nowrap;overflow:hidden}
-.sch-block-name{font-size:9.5px;font-weight:700;line-height:1.2;letter-spacing:.15px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.sch-block:hover{filter:brightness(1.35);z-index:20}
+.sch-block-time{font-size:6.5px;letter-spacing:.3px;font-weight:700;opacity:.55;white-space:nowrap;overflow:hidden;line-height:1.1}
+.sch-block-name{font-size:8.5px;font-weight:700;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;margin-top:1px}
+/* Right-side Y axis */
+.sch-yaxis{width:26px;flex-shrink:0;position:relative;border-left:1px solid rgba(74,58,38,.3)}
+.sch-yaxis-inner{position:relative}
+.sch-tick-label{
+  position:absolute;left:3px;right:0;
+  font-family:'Bebas Neue',sans-serif;font-size:11px;
+  color:var(--muted);transform:translateY(-50%);line-height:1;
+}
+.sch-tick-label.hour{color:rgba(245,234,204,.85)}
 /* Legend */
-.sch-legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:14px 0 12px}
+.sch-legend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;padding:10px 0 8px}
 .sch-leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
-.sch-leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
-.sch-note{font-size:10px;color:var(--muted);text-align:center;margin-top:8px;font-style:italic;padding-bottom:16px}
+.sch-leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.sch-note{font-size:10px;color:rgba(168,144,104,.55);text-align:center;padding:6px 0 14px;font-style:italic}
 
 /* ── MODAL ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(6px)}
@@ -899,26 +875,26 @@ const RAW=[
 {n:"Anfisa Letyago",g:"Techno",day:"Sat",stage:"Do LaB",wk:1},
 {n:"Arthi",g:"Electronic",day:"Fri",stage:"Do LaB",wk:1},
 {n:"Baby J",g:"Electronic",day:"Sat",stage:"Do LaB",wk:1},
-{n:"Brunello",g:"House",day:"Fri",stage:"Do LaB",wk:1},
-{n:"Bullet Tooth",g:"Drum & Bass",day:"Sat",stage:"Do LaB",wk:1},
-{n:"Cincity",g:"Electronic",day:"Sat",stage:"Do LaB",wk:1},
+{n:"Brunello",g:"House",day:"Sun",stage:"Do LaB",wk:1},
+{n:"Bullet Tooth",g:"Drum & Bass",day:"Fri",stage:"Do LaB",wk:1},
+{n:"Cincity",g:"Electronic",day:"Sun",stage:"Do LaB",wk:1},
 {n:"Deer Jade",g:"Electronic",day:"Sun",stage:"Do LaB",wk:1},
 {n:"Effin",g:"Electronic",day:"Fri",stage:"Do LaB",wk:1},
-{n:"Jackie Hollander",g:"House",day:"Sat",stage:"Do LaB",wk:1},
+{n:"Jackie Hollander",g:"House",day:"Sun",stage:"Do LaB",wk:1},
 {n:"Jazzy",g:"House",day:"Fri",stage:"Do LaB",wk:1},
-{n:"Jigitz",g:"Electronic",day:"Sat",stage:"Do LaB",wk:1},
-{n:"Lumia",g:"Electronic",day:"Fri",stage:"Do LaB",wk:1},
+{n:"Jigitz",g:"Electronic",day:"Fri",stage:"Do LaB",wk:1},
+{n:"Lumia",g:"Electronic",day:"Sat",stage:"Do LaB",wk:1},
 {n:"Maxi Meraki",g:"Electronic",day:"Sun",stage:"Do LaB",wk:1},
 {n:"MCR-T",g:"Electronic",day:"Fri",stage:"Do LaB",wk:1},
 {n:"Natascha Polke",g:"Electronic",day:"Sat",stage:"Do LaB",wk:2},
-{n:"Omar+",g:"Electronic",day:"Fri",stage:"Do LaB",wk:1},
-{n:"Omnom",g:"Electronic",day:"Sat",stage:"Do LaB",wk:1},
+{n:"Omar+",g:"Electronic",day:"Sun",stage:"Do LaB",wk:1},
+{n:"Omnom",g:"Electronic",day:"Sun",stage:"Do LaB",wk:1},
 {n:"Patricio",g:"Electronic",day:"Sun",stage:"Do LaB",wk:1},
-{n:"Poolside's Daytime Disco",g:"House",day:"Fri",stage:"Do LaB",wk:1},
+{n:"Poolside's Daytime Disco",g:"House",day:"Sun",stage:"Do LaB",wk:1},
 {n:"Roddy Lima",g:"Electronic",day:"Sat",stage:"Do LaB",wk:1},
 {n:"Sarz",g:"Electronic",day:"Fri",stage:"Do LaB",wk:1},
 {n:"Seth Troxler",g:"Techno",day:"Fri",stage:"Do LaB",wk:1},
-{n:"Soraya",g:"Electronic",day:"Sun",stage:"Do LaB",wk:1},
+{n:"Soraya",g:"Electronic",day:"Fri",stage:"Do LaB",wk:1},
 {n:"Starjunk 95",g:"Electronic",day:"Sat",stage:"Do LaB",wk:1},
 {n:"Tinashe (DJ Set)",g:"DJ Set",day:"Sat",stage:"Do LaB",wk:1},
 {n:"Whethan",g:"Electronic",day:"Sun",stage:"Do LaB",wk:1},
@@ -927,14 +903,14 @@ const RAW=[
 {n:"Aeon:Mode b2b Blossom",g:"Electronic",day:"Fri",stage:"Do LaB",wk:2},
 {n:"Alex Chapman b2b Zoe Gitter",g:"Electronic",day:"Sat",stage:"Do LaB",wk:2},
 {n:"Ape Drums b2b Bontan",g:"Electronic",day:"Fri",stage:"Do LaB",wk:2},
-{n:"Baalti",g:"Electronic",day:"Sun",stage:"Do LaB",wk:1},
+{n:"Baalti",g:"Electronic",day:"Sat",stage:"Do LaB",wk:1},
 {n:"The Brothers Macklovitch (A-Trak & Dave1)",g:"Electronic",day:"Sat",stage:"Do LaB",wk:2},
 {n:"Champion",g:"Drum & Bass",day:"Sun",stage:"Do LaB",wk:2},
 {n:"Cquestt",g:"Electronic",day:"Sat",stage:"Do LaB",wk:2},
 {n:"DJ Habibeats b2b Zeemuffin",g:"Electronic",day:"Fri",stage:"Do LaB",wk:2},
 {n:"Drama (DJ Set)",g:"DJ Set",day:"Sat",stage:"Do LaB",wk:2},
 {n:"Eliza Rose",g:"House",day:"Fri",stage:"Do LaB",wk:2},
-{n:"Fifi",g:"Electronic",day:"Sun",stage:"Do LaB",wk:1},
+{n:"Fifi",g:"Electronic",day:"Fri",stage:"Do LaB",wk:1},
 {n:"Gudfella",g:"Electronic",day:"Sat",stage:"Do LaB",wk:2},
 {n:"Level Up b2b Mary Droppinz",g:"Electronic",day:"Sun",stage:"Do LaB",wk:2},
 {n:"Lyny",g:"Electronic",day:"Sat",stage:"Do LaB",wk:2},
@@ -943,7 +919,7 @@ const RAW=[
 {n:"Sam Binga b2b Jialing",g:"Drum & Bass",day:"Sun",stage:"Do LaB",wk:2},
 {n:"SBTRKT",g:"Electronic",day:"Sun",stage:"Do LaB",wk:2},
 {n:"Silva Bumpa",g:"Electronic",day:"Sat",stage:"Do LaB",wk:2},
-{n:"Soul Purpose",g:"Electronic",day:"Fri",stage:"Do LaB",wk:1},
+{n:"Soul Purpose",g:"Electronic",day:"Sun",stage:"Do LaB",wk:1},
 {n:"Strawbry",g:"Electronic",day:"Sun",stage:"Do LaB",wk:2},
 {n:"Tourist",g:"Electronic",day:"Sat",stage:"Do LaB",wk:2},
 {n:"X Club.",g:"Electronic",day:"Fri",stage:"Do LaB",wk:2},
@@ -1376,16 +1352,17 @@ const WK1_SCHEDULE={
           {t:"11:45–1:00", n:"Kettama"},
         ],
         "Do LaB":[
-          {t:"1:00–2:15",  n:"Arthi"},
-          {t:"2:15–3:30",  n:"Effin"},
-          {t:"3:30–4:45",  n:"Lumia"},
-          {t:"4:45–6:00",  n:"1TBSP"},
-          {t:"6:00–7:15",  n:"Soul Purpose"},
-          {t:"7:15–8:30",  n:"Jazzy"},
-          {t:"8:30–9:45",  n:"Poolside's Daytime Disco"},
-          {t:"9:45–11:00", n:"Andy C"},
-          {t:"11:00–12:00",n:"Seth Troxler"},
-          {t:"12:00–1:00", n:"MCR-T"},
+          {t:"1:00–2:00",  n:"Soraya"},
+          {t:"2:00–3:00",  n:"Fifi"},
+          {t:"3:00–4:00",  n:"1TBSP"},
+          {t:"4:00–5:00",  n:"Bullet Tooth"},
+          {t:"5:20–6:00",  n:"MCR-T"},
+          {t:"6:00–7:05",  n:"Jazzy"},
+          {t:"7:05–8:05",  n:"Effin"},
+          {t:"8:10–9:10",  n:"Surprise"},
+          {t:"9:15–10:30", n:"Jigitz"},
+          {t:"10:30–11:45",n:"Andy C"},
+          {t:"11:45–1:00", n:"Surprise"},
         ],
         "Heineken House":[
           {t:"2:00–4:00",  n:"Sander Kleinenberg"},
@@ -1463,16 +1440,17 @@ const WK1_SCHEDULE={
           {t:"11:00–1:00", n:"Boys Noize"},
         ],
         "Do LaB":[
-          {t:"1:00–2:15",  n:"Omnom"},
-          {t:"2:15–3:30",  n:"Roddy Lima"},
-          {t:"3:30–4:45",  n:"Jigitz"},
-          {t:"4:45–6:00",  n:"Cincity"},
-          {t:"6:00–7:15",  n:"Bullet Tooth"},
-          {t:"7:15–8:30",  n:"Baby J"},
-          {t:"8:30–9:45",  n:"Andhim"},
-          {t:"9:45–11:00", n:"Tinashe (DJ Set)"},
-          {t:"11:00–12:00",n:"Jackie Hollander"},
-          {t:"12:00–1:00", n:"Anfisa Letyago"},
+          {t:"1:00–2:05",  n:"Lumia"},
+          {t:"2:05–3:10",  n:"Baalti"},
+          {t:"3:10–4:15",  n:"Roddy Lima"},
+          {t:"4:15–5:20",  n:"Baby J"},
+          {t:"5:20–6:25",  n:"Starjunk 95"},
+          {t:"6:25–7:30",  n:"Tinashe (DJ Set)"},
+          {t:"7:30–8:35",  n:"Surprise"},
+          {t:"8:35–9:40",  n:"Andhim"},
+          {t:"9:40–10:40", n:"Anfisa Letyago"},
+          {t:"10:40–11:50",n:"Surprise"},
+          {t:"11:50–1:00", n:"Surprise"},
         ],
         "Heineken House":[
           {t:"2:00–3:00",  n:"Redke"},
@@ -1547,16 +1525,17 @@ const WK1_SCHEDULE={
           {t:"10:00–12:00",n:"Green Velvet x AYYBO"},
         ],
         "Do LaB":[
-          {t:"1:00–2:15",  n:"Brunello"},
-          {t:"2:15–3:30",  n:"Alisha"},
-          {t:"3:30–4:45",  n:"Omar+"},
-          {t:"4:45–6:00",  n:"Sarz"},
-          {t:"6:00–7:15",  n:"Deer Jade"},
-          {t:"7:15–8:30",  n:"Maxi Meraki"},
-          {t:"8:30–9:45",  n:"Soraya"},
-          {t:"9:45–11:00", n:"Whethan"},
-          {t:"11:00–12:00",n:"Patricio"},
-          {t:"12:00–1:00", n:"Fifi"},
+          {t:"1:00–2:00",  n:"Soul Purpose"},
+          {t:"2:00–3:00",  n:"Cincity"},
+          {t:"3:00–4:00",  n:"Jackie Hollander"},
+          {t:"4:00–5:00",  n:"Brunello"},
+          {t:"5:00–6:00",  n:"Poolside's Daytime Disco"},
+          {t:"6:00–6:40",  n:"Surprise"},
+          {t:"6:40–7:40",  n:"Deer Jade"},
+          {t:"7:40–8:45",  n:"Omar+"},
+          {t:"8:45–9:45",  n:"Omnom"},
+          {t:"9:45–10:45", n:"Whethan"},
+          {t:"10:45–12:00",n:"Surprise"},
         ],
         "Heineken House":[
           {t:"2:00–4:00",  n:"Mild Minds"},
@@ -1577,137 +1556,140 @@ function buildScheduleGrid(sorted,sc){
   const root=document.getElementById('sch-root');
   if(!root)return;
 
-  // ── Time helpers ──────────────────────────────────────────
-  // Parse "H:MM" (12-hour, treats <6am as next-day)
-  function parseTime(str){
-    const[h,m]=str.trim().split(':').map(Number);
-    // After-midnight sets (1am, 12am) should appear at top (late in the day)
-    // We use 24h where 13=1pm, 24=12am(midnight), 25=1am
-    let h24=h;
-    if(h<=6) h24=h+24; // 1am → 25, 2am → 26
-    else if(h<13) h24=h; // 9am → 9 (unused but safe)
-    return h24*60+m;
+  // ── TIME MATH ────────────────────────────────────────────
+  // All times stored as minutes since noon.
+  // 12:00pm = 0,  1:00pm = 60,  11:00pm = 660,
+  // 12:00am = 720 (midnight),   1:00am  = 780
+  function toMins(str){
+    str=str.trim();
+    const[hRaw,mRaw]=str.split(':');
+    let h=parseInt(hRaw,10), m=parseInt(mRaw,10);
+    // All sets run from ~1pm to ~1am. No 12pm (noon) sets exist.
+    // So 12:xx always means midnight (12am) = 720+m mins since noon.
+    // 1-11 → PM: 1pm=60, 9pm=540, 11pm=660
+    if(h===12) return 720+m;  // midnight
+    else       return h*60+m; // 1pm=60 through 11pm=660
   }
   function parsePair(t){
-    // t like "4:10–4:55" or "11:50–1:00"
-    const parts=t.split('–');
-    return{start:parseTime(parts[0]),end:parseTime(parts[1])};
-  }
-  function fmtHour(mins){
-    const h=Math.floor(mins/60)%24;
-    const m=mins%60;
-    const ampm=h>=12?'am':'pm'; // actually we display 12h
-    const h12=h===0?12:h>12?h-12:h;
-    return m===0?`${h12}${ampm}`:`${h12}:${m<10?'0'+m:m}${ampm}`;
+    const[a,b]=t.split('–');
+    let s=toMins(a), e=toMins(b);
+    if(e<=s) e+=720; // wrap: end is after-midnight relative to start
+    return{s,e};
   }
 
-  // ── Layout constants ──────────────────────────────────────
-  const PX_PER_MIN=2.4;   // pixels per minute
-  const DAY_START=parseTime('12:30'); // 12:30pm — grid top (visually flipped: top=late)
-  const DAY_END  =parseTime('1:30');  // 1:30am  — grid bottom (earliest on screen)
-  // NOTE: We draw time bottom-up (1:30am at bottom of screen = top of data)
-  // So: top of visual = DAY_END, bottom of visual = DAY_START
-  const TOTAL_MINS=DAY_END-DAY_START; // total mins shown
-  const GRID_HEIGHT=TOTAL_MINS*PX_PER_MIN;
+  // Grid spans 12:30pm (= -30 mins) to 1:15am (= 795 mins)
+  const GRID_START=-30;   // 12:30pm — bottom of grid
+  const GRID_END  =795;   // 1:15am  — top of grid
+  const SPAN=GRID_END-GRID_START;  // 825 mins total
+  const PX=2.2;           // pixels per minute
+  const GRID_H=SPAN*PX;   // total pixel height of column body
+  const HDR_H=26;         // stage header height px
 
-  function minToY(mins){
-    // Convert absolute minutes to Y pixel from TOP of grid
-    // DAY_END (late) → top (y=0), DAY_START (early) → bottom (y=GRID_HEIGHT)
-    // Wait — poster style: 1pm at BOTTOM, 1am at TOP
-    // So early = large y (bottom), late = small y (top)
-    return (DAY_END-mins)*PX_PER_MIN;
-  }
+  // Convert minutes-since-noon to Y pixel from TOP of col-body.
+  // Time flows bottom-up: large mins (late) → small Y (top); small mins (early) → large Y (bottom)
+  function minToY(m){return (GRID_END-m)*PX;}
 
-  // ── Tier color helper ─────────────────────────────────────
+  // ── TIER ─────────────────────────────────────────────────
   function slotTier(name){
     if(sc&&sc[name]!==undefined){
-      const s=sc[name];
-      if(s>=7.5)return{bg:"rgba(74,140,88,.28)",border:"#4A8C5C",text:"#6AB87A",glow:"0 0 8px rgba(74,140,88,.45)"};
-      if(s>=5.0)return{bg:"rgba(212,168,67,.25)",border:"#D4A843",text:"#F0C865",glow:"0 0 8px rgba(212,168,67,.4)"};
-      if(s>=3.0)return{bg:"rgba(196,86,26,.22)",border:"#C4561A",text:"#E8733A",glow:"0 0 6px rgba(196,86,26,.35)"};
-      return{bg:"rgba(60,45,30,.45)",border:"#504030",text:"#A89068",glow:"none"};
+      const v=sc[name];
+      if(v>=7.5)return{bg:"rgba(60,110,70,.55)",  bdr:"#5AAC6A",txt:"#8ADE9A",glow:"0 0 7px rgba(74,160,90,.5)"};
+      if(v>=5.0)return{bg:"rgba(180,130,20,.38)", bdr:"#D4A843",txt:"#F0C865",glow:"0 0 7px rgba(212,168,67,.4)"};
+      if(v>=3.0)return{bg:"rgba(160,60,14,.38)",  bdr:"#C4561A",txt:"#E8733A",glow:"0 0 5px rgba(196,86,26,.35)"};
+      return      {bg:"rgba(50,36,22,.65)",        bdr:"#5A4428",txt:"#907858",glow:"none"};
     }
-    return{bg:"rgba(28,20,12,.75)",border:"rgba(74,58,38,.5)",text:"rgba(245,234,204,.7)",glow:"none"};
+    return        {bg:"rgba(22,15,9,.8)",           bdr:"rgba(74,58,38,.55)",txt:"rgba(240,224,196,.65)",glow:"none"};
   }
 
   const stages=WK1_SCHEDULE.stages;
 
-  // ── Legend ────────────────────────────────────────────────
+  // ── LEGEND ───────────────────────────────────────────────
   let html=`<div class="sch-legend">
-    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:#4A8C5C;box-shadow:0 0 6px rgba(74,140,88,.7)"></div>Tier 1 (7.5+)</div>
-    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:#D4A843;box-shadow:0 0 6px rgba(212,168,67,.7)"></div>Tier 2 (5.0–7.4)</div>
-    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:#C4561A;box-shadow:0 0 6px rgba(196,86,26,.6)"></div>Tier 3 (3.0–4.9)</div>
-    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:#504030"></div>Ranked below 3</div>
-    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:rgba(28,20,12,.9);border:1px solid rgba(74,58,38,.5)"></div>Not in your pool</div>
+    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:#5AAC6A;box-shadow:0 0 5px rgba(74,160,90,.6)"></div>Tier 1 (7.5+)</div>
+    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:#D4A843;box-shadow:0 0 5px rgba(212,168,67,.6)"></div>Tier 2 (5.0–7.4)</div>
+    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:#C4561A;box-shadow:0 0 5px rgba(196,86,26,.5)"></div>Tier 3 (3.0–4.9)</div>
+    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:#5A4428"></div>Ranked below 3</div>
+    <div class="sch-leg-item"><div class="sch-leg-dot" style="background:rgba(22,15,9,.9);border:1px solid rgba(74,58,38,.6)"></div>Not in pool</div>
   </div>`;
 
-  // ── Per-day grids ─────────────────────────────────────────
+  // ── HOUR TICKS for Y-axis ─────────────────────────────────
+  // Every full hour from 1pm to 1am
+  function hourTicks(){
+    const ticks=[];
+    // 1pm=60 to 12am=720, then 1am=780
+    for(let m=60;m<=780;m+=60) ticks.push(m);
+    return ticks;
+  }
+  function hourLabel(m){
+    // m is minutes since noon (12pm=0, 1pm=60 ... 12am=720, 1am=780)
+    const totalH=Math.round(m/60); // 0=noon, 1=1pm ... 12=midnight, 13=1am
+    const h12=totalH===0?12:totalH<=12?totalH:totalH-12;
+    return String(h12);
+  }
+
+  // ── PER-DAY ───────────────────────────────────────────────
   WK1_SCHEDULE.days.forEach(day=>{
     html+=`<div class="sch-day-wrap">
       <div class="sch-day-header">${day.label}<span class="sch-day-sub">${day.date} · Weekend 1</span></div>
       <div class="sch-scroll">
-        <div class="sch-timeline" style="height:${GRID_HEIGHT+36}px">`;
+        <div class="sch-timeline">`;
 
-    // ── Y-axis (time labels) ──────────────────────────────
-    html+=`<div class="sch-yaxis">
-      <div class="sch-yaxis-inner" style="height:${GRID_HEIGHT}px;margin-top:30px;position:relative">`;
-    // Tick every 30 min
-    for(let m=DAY_START;m<=DAY_END;m+=30){
-      const y=minToY(m);
-      const isHour=m%60===0;
-      html+=`<div class="sch-tick-label" style="top:${y}px;${isHour?'color:var(--text)':'opacity:.55'}">${fmtHour(m)}</div>`;
-    }
-    html+=`</div></div>`; // close yaxis
-
-    // ── Horizontal grid lines (behind all columns) ────────
-    // These go inside each column, not as a separate overlay, so we do them per-col
-
-    // ── Stage columns ─────────────────────────────────────
+    // Stage columns
     stages.forEach(stage=>{
       const color=stage.color;
       const sets=day.sets[stage.id]||[];
 
       html+=`<div class="sch-stage-col">
-        <div class="sch-stage-hdr" style="color:${color};border-bottom-color:${color};background:${color}1A;height:30px;line-height:20px">${stage.short}</div>
-        <div class="sch-col-body" style="height:${GRID_HEIGHT}px">`;
+        <div class="sch-stage-hdr" style="color:${color};border-bottom-color:${color}">${stage.short}</div>
+        <div class="sch-col-body" style="height:${GRID_H}px">`;
 
-      // Draw horizontal grid lines
-      for(let m=DAY_START;m<=DAY_END;m+=30){
-        const y=minToY(m);
-        const isHour=m%60===0;
-        html+=`<div style="position:absolute;left:0;right:0;top:${y}px;height:1px;background:${isHour?'rgba(74,58,38,.3)':'rgba(74,58,38,.12)'};pointer-events:none;z-index:1"></div>`;
+      // Grid lines — every 30 min
+      for(let m=0;m<=GRID_END-GRID_START;m+=30){
+        const absM=GRID_START+m;
+        const y=minToY(absM);
+        const isHour=absM%60===0;
+        html+=`<div style="position:absolute;left:0;right:0;top:${y.toFixed(1)}px;height:1px;background:${isHour?'rgba(100,80,50,.35)':'rgba(74,58,38,.15)'};z-index:1;pointer-events:none"></div>`;
       }
 
-      // Draw set blocks
+      // Set blocks
       sets.forEach(set=>{
-        const{start,end}=parsePair(set.t);
-        // Clamp to visible range
-        const clampedStart=Math.max(start,DAY_START);
-        const clampedEnd=Math.min(end,DAY_END);
-        if(clampedEnd<=clampedStart)return;
-
-        const top=minToY(clampedEnd);   // end-time → smaller y (higher on screen)
-        const bot=minToY(clampedStart); // start-time → larger y (lower on screen)
-        const height=bot-top;
-        if(height<2)return;
+        const{s,e}=parsePair(set.t);
+        const cs=Math.max(s,GRID_START);
+        const ce=Math.min(e,GRID_END);
+        if(ce<=cs)return;
+        const top=minToY(ce);
+        const h=(ce-cs)*PX;
+        if(h<4)return;
 
         const t=slotTier(set.n);
-        const showTime=height>=18;
-        const showName=height>=10;
+        const showTime=h>=14;
+        const showName=h>=8;
 
-        html+=`<div class="sch-block" style="top:${top}px;height:${height}px;background:${t.bg};border-left-color:${t.border};box-shadow:${t.glow}" title="${set.n} · ${set.t}">`;
+        html+=`<div class="sch-block" style="top:${top.toFixed(1)}px;height:${h.toFixed(1)}px;background:${t.bg};border-left-color:${t.bdr};box-shadow:${t.glow}" title="${set.n} · ${set.t}">`;
         if(showTime) html+=`<div class="sch-block-time">${set.t}</div>`;
-        if(showName) html+=`<div class="sch-block-name" style="color:${t.text}">${set.n}</div>`;
+        if(showName) html+=`<div class="sch-block-name" style="color:${t.txt}">${set.n}</div>`;
         html+=`</div>`;
       });
 
-      html+=`</div></div>`; // close col-body, stage-col
+      html+=`</div></div>`; // col-body, stage-col
     });
 
-    html+=`</div></div></div>`; // close timeline, scroll, day-wrap
+    // Right Y-axis with hour numbers
+    const ticks=hourTicks();
+    html+=`<div class="sch-yaxis">
+      <div style="height:${HDR_H}px"></div>
+      <div class="sch-yaxis-inner" style="height:${GRID_H}px;position:relative">`;
+    ticks.forEach(m=>{
+      const y=minToY(m);
+      if(y<0||y>GRID_H)return;
+      html+=`<div class="sch-tick-label hour" style="top:${y.toFixed(1)}px">${hourLabel(m)}</div>`;
+    });
+    html+=`</div></div>`; // yaxis-inner, yaxis
+
+    html+=`</div></div></div>`; // timeline, scroll, day-wrap
   });
 
-  html+=`<div class="sch-note">Source: Clashfinder rev 231 (Apr 5 2026) · Do LaB slot times estimated · Wk 2 set times TBA</div>`;
+  html+=`<div class="sch-note">Source: Clashfinder rev 231 (Apr 5 2026) · Do LaB times estimated · Wk 2 TBA</div>`;
   root.innerHTML=html;
 }
 
